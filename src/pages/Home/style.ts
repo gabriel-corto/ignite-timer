@@ -72,6 +72,7 @@ export const StartCountDownButton = styled.button`
   } 
   &:disabled {
     cursor: not-allowed;
+    opacity: 0.7;
   }
 `
 const BaseInput = styled.input`
