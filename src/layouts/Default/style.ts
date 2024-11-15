@@ -8,5 +8,5 @@ export const LayoutContainer = styled.div`
   
   border-radius: 8px;
   background: ${props => props.theme["gray-800"]};
-  border: 2px solid ${props => props.theme["gray-600"]};
+  border: 3px solid ${props => props.theme["gray-600"]};
 `

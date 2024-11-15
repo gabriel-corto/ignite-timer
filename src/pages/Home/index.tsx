@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+
+import { differenceInSeconds } from "date-fns"
+import { Play } from "phosphor-react"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as zod from "zod"
-
-import { Play } from "phosphor-react"
 
 import { 
   CountDownContainer, 
@@ -13,7 +16,6 @@ import {
   StartCountDownButton, 
   TaskInput 
 } from "./style"
-import { useState } from "react"
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(5),
@@ -24,6 +26,7 @@ interface Cycle {
   id: string 
   task: string 
   minutesAmount: number 
+  startDate: Date 
 }
 export function Home() {
   
@@ -33,6 +36,24 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  useEffect(() => {
+    let cycleInterval: number 
+
+    if(activeCycle) {
+      cycleInterval = setInterval(() => {
+        const SecondsElapsedSinceActiveCycleStarted = differenceInSeconds(
+          new Date(), activeCycle.startDate
+        )
+      
+        setAmountSecondsPassed(SecondsElapsedSinceActiveCycleStarted)
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(cycleInterval)
+    } 
+  }, [activeCycle])
+
   const totalActiveCycleSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalActiveCycleSeconds - amountSecondsPassed: 0
   
@@ -41,6 +62,16 @@ export function Home() {
 
   const formattedMinutes = String(amountOfMinutesRemaining).padStart(2, "0")
   const formattedSeconds = String(amountOfSecondsRemaining).padStart(2, "0")
+
+  useEffect(() => {
+    if(activeCycle) {
+      document.title = `Ignite Timer: ${formattedMinutes}: ${formattedSeconds}`
+    }
+  }, [
+    formattedMinutes,
+    formattedSeconds,
+    activeCycle
+  ])
 
   type newCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
   
@@ -54,14 +85,20 @@ export function Home() {
 
   function handleCreateNewCycle(data: newCycleFormData) {
     const { task, minutesAmount } = data 
+
     const newCycle: Cycle = {
       id: String(new Date().getTime()),
       task: task,
-      minutesAmount: minutesAmount
+      minutesAmount: minutesAmount,
+      startDate: new Date()
     }
 
     setCycles((state) => [...state, newCycle])
     setActiveCycleId(newCycle.id)
+
+    setAmountSecondsPassed(
+      differenceInSeconds(new Date, newCycle.startDate)
+    )
 
     reset()
   }
@@ -114,4 +151,8 @@ export function Home() {
       </form>
     </HomeContainer>
   )
+}
+
+function usEffect(arg0: () => void, arg1: never[]) {
+  throw new Error("Function not implemented.")
 }
