@@ -63,6 +63,7 @@ const VARIANT_COLORS = {
   in_progress: "yellow-500",
   completed: "green-500",
 } as const
+
 interface StatusProps {
   variant: keyof typeof VARIANT_COLORS
 }

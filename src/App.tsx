@@ -8,7 +8,7 @@ import { GlobalStyle } from "./styles/global";
 export function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
         <Routers />
       </BrowserRouter>
 

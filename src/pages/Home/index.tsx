@@ -1,4 +1,9 @@
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as zod from "zod"
+
 import { Play } from "phosphor-react"
+
 import { 
   CountDownContainer, 
   FormContainer, 
@@ -8,20 +13,38 @@ import {
   StartCountDownButton, 
   TaskInput 
 } from "./style"
-
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as zod from "zod"
+import { useState } from "react"
 
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(5),
   minutesAmount: zod.number().min(5),
 })
+
+interface Cycle {
+  id: string 
+  task: string 
+  minutesAmount: number 
+}
 export function Home() {
+  
+  const [ cycles, setCycles ] = useState<Cycle[]>([])
+  const [ activeCycleId, setActiveCycleId, ] = useState<string | null>(null)
+  const [ amountSecondsPassed, setAmountSecondsPassed, ] = useState<number>(0)
+
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  const totalActiveCycleSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+  const currentSeconds = activeCycle ? totalActiveCycleSeconds - amountSecondsPassed: 0
+  
+  const amountOfMinutesRemaining = Math.floor(currentSeconds / 60)
+  const amountOfSecondsRemaining = currentSeconds % 60 
+
+  const formattedMinutes = String(amountOfMinutesRemaining).padStart(2, "0")
+  const formattedSeconds = String(amountOfSecondsRemaining).padStart(2, "0")
 
   type newCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
   
-  const { register, handleSubmit } = useForm<newCycleFormData>({
+  const { register, handleSubmit, reset } = useForm<newCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
       task: "",
@@ -30,8 +53,19 @@ export function Home() {
   })
 
   function handleCreateNewCycle(data: newCycleFormData) {
-    console.log(data)
+    const { task, minutesAmount } = data 
+    const newCycle: Cycle = {
+      id: String(new Date().getTime()),
+      task: task,
+      minutesAmount: minutesAmount
+    }
+
+    setCycles((state) => [...state, newCycle])
+    setActiveCycleId(newCycle.id)
+
+    reset()
   }
+
 
   return(
     <HomeContainer>
@@ -41,9 +75,15 @@ export function Home() {
           <TaskInput 
             type="text" 
             id="task" 
+            list="task-suggestions"
             placeholder="Dê um nome para o seu projecto"
             {...register("task")}
           />
+
+          <datalist id="task-suggestions">
+            <option>Projecto 1</option>
+            <option>Projecto 2</option>
+          </datalist>
 
           <label htmlFor="minutesAmount">Durante: </label>
           <MinuteAmountInput 
@@ -60,11 +100,11 @@ export function Home() {
         </FormContainer>
 
         <CountDownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{formattedMinutes[0]}</span>
+          <span>{formattedMinutes[1]}</span>
           <Separator>:</Separator>
-          <span>0</span>
-          <span>0</span>
+          <span>{formattedSeconds[0]}</span>
+          <span>{formattedSeconds[1]}</span>
         </CountDownContainer>
 
         <StartCountDownButton type="submit">
