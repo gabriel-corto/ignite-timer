@@ -29,6 +29,7 @@ interface Cycle {
   minutesAmount: number 
   startDate: Date 
   interruptDate?: Date 
+  finishedDate?: Date 
 }
 export function Home() {
   
@@ -38,25 +39,42 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  const totalActiveCycleSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+
   useEffect(() => {
     let cycleInterval: number 
 
     if(activeCycle) {
       cycleInterval = setInterval(() => {
-        const SecondsElapsedSinceActiveCycleStarted = differenceInSeconds(
+        const secondsPassedSinceActiveCycleStarted = differenceInSeconds(
           new Date(), activeCycle.startDate
         )
+
+        if(secondsPassedSinceActiveCycleStarted >= totalActiveCycleSeconds ) {
+          const cycleListWithFinishedOne = cycles.map(cycle => {
+            if(cycle.id === activeCycle.id) {
+              return {...cycle, finishedDate: new Date()}
+            } else {
+              return cycle 
+            }
+          })
+
+          setCycles(cycleListWithFinishedOne)
+          clearInterval(cycleInterval)
+          setAmountSecondsPassed(totalActiveCycleSeconds)
+
+        } else {
+          setAmountSecondsPassed(secondsPassedSinceActiveCycleStarted)
+        }
       
-        setAmountSecondsPassed(SecondsElapsedSinceActiveCycleStarted)
       }, 1000);
     }
 
     return () => {
       clearInterval(cycleInterval)
     } 
-  }, [activeCycle])
+  }, [activeCycle, totalActiveCycleSeconds, activeCycleId ])
 
-  const totalActiveCycleSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalActiveCycleSeconds - amountSecondsPassed: 0
   
   const amountOfMinutesRemaining = Math.floor(currentSeconds / 60)
@@ -108,14 +126,15 @@ export function Home() {
   }
 
   function handleInterruptActiveCycle() {
-    setCycles(cycles.map(cycle => {
+    const cycleListWithInterruptedOne = cycles.map(cycle => {
       if(cycle.id === activeCycleId) {
         return { ...cycle, interruptDate: new Date() }
       } else {
         return cycle
       }
     }
-    ))
+    )
+    setCycles(cycleListWithInterruptedOne)
     setActiveCycleId(null)
   }
 
