@@ -14,41 +14,6 @@ export const HomeContainer = styled.main`
     gap: 3.5rem; 
   }
 `
-export const FormContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: ${props => props.theme["gray-100"]};
-  font-size: 1.125rem;
-  font-weight: bold;
-  flex-wrap: wrap;
-`
-export const CountDownContainer = styled.div`
-  font-family: 'Roboto Mono', monospace;
-  font-size: 10rem;
-  line-height: 8rem;
-  color: ${props => props.theme["gray-100"]};
-
-  display: flex;
-  gap: 1rem;
-
-  span {
-    background: ${props => props.theme["gray-700"]};
-    padding: 2rem 2.5rem;
-    border-radius: 8px;
-  }
-`
-export const Separator = styled.div`
-  padding: 2rem 0rem;
-  color: ${props => props.theme["green-500"]};
-
-  width: 4rem;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-`
 const BaseCountDownButton = styled.button`
   border: 0;
   width: 100%;
@@ -85,29 +50,4 @@ export const StopCountDownButton = styled(BaseCountDownButton)`
   &:focus {
     box-shadow: 0px 0px 0px 2px ${props => props.theme["red-500"]};
   }
-`
-const BaseInput = styled.input`
-  background: transparent;
-  color: ${props => props.theme["gray-100"]};
-  height: 2.5rem;
-  border: 0;
-  border-bottom: 1px solid ${props => props.theme["gray-500"]};
-  font-size: 1.125rem;
-  font-weight: bold;
-  padding: 0 0.5rem;  
-
-  &:focus {
-    box-shadow: none;
-    border-color: ${props => props.theme["green-500"]};
-  }
-
-  &::placeholder{
-    color: cornflowerblue${props => props.theme["gray-500"]};
-  }
-`
-export const TaskInput = styled(BaseInput)`
-  flex: 1;
-`
-export const MinuteAmountInput = styled(BaseInput)`
-  width: 5rem;
 `
