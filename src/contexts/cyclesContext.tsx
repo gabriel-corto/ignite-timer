@@ -1,5 +1,5 @@
 import { differenceInSeconds } from "date-fns"
-import { createContext, ReactNode, useState } from "react"
+import { createContext, ReactNode, useReducer, useState } from "react"
 
 interface Cycle {
   id: string 
@@ -21,7 +21,7 @@ interface CycleContextType {
   activeCycleId: string | null
   amountSecondsPassed: number
   updateAmountSecondsPassed: (seconds: number) => void 
-  markCurrentCycleAsFinished: () => void 
+  markActiveCycleAsFinished: () => void 
   interruptActiveCycle: () => void 
 }
 
@@ -30,11 +30,60 @@ export const CycleContext = createContext({} as CycleContextType)
 interface CyclesContextProviderProps {
   children: ReactNode
 }
+
+interface CycleState {
+  cycles: Cycle[]
+  activeCycleId: string | null
+}
+
 export function CyclesContextProvider({ children }: CyclesContextProviderProps) {
-  const [ cycles, setCycles ] = useState<Cycle[]>([])
-  const [ activeCycleId, setActiveCycleId, ] = useState<string | null>(null)
+  const [ cycleState, dispatch ] = useReducer((state: CycleState, action: any) => {
+    
+    switch(action.type) {
+      case "ADD_NEW_CYCLE":
+        return {
+          ...state,
+          cycles: [...state.cycles, action.payload.newCycle],
+          activeCycleId: action.payload.newCycle.id
+        }
+      case "INTERRUPT_ACTIVE_CYCLE":
+        const cycleListWithInterruptedOne = state.cycles.map(cycle => {
+          if(cycle.id === state.activeCycleId) {
+            return {...cycle, interruptDate: new Date()}
+          } else {
+            return cycle
+          }
+        })
+        return {
+          ...state, 
+          cycles: cycleListWithInterruptedOne,
+          activeCycleId: null
+        }
+      case "MARK_ACTIVE_CYCLE_AS_FINISHED":
+        const cycleListWithFinishedOne = state.cycles.map(cycle => {
+          if(cycle.id === state.activeCycleId) {
+            return {...cycle, finishedDate: new Date()}
+          } else {
+            return cycle
+          }
+        }
+        )
+        return {
+          ...state, 
+          cycles: [cycleListWithFinishedOne]
+        }
+      default: 
+        return state 
+    }
+  }, 
+  {
+    cycles: [],
+    activeCycleId: null
+  })
+
   const [ amountSecondsPassed, setAmountSecondsPassed, ] = useState<number>(0)
 
+  const { cycles, activeCycleId } = cycleState
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
   function createNewCycle(data: CycleFormData) {
@@ -47,8 +96,12 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
       startDate: new Date()
     }
 
-    setCycles((state) => [...state, newCycle])
-    setActiveCycleId(newCycle.id)
+    dispatch({
+      type: "ADD_NEW_CYCLE",
+      payload: {
+        newCycle
+      }
+    })
 
     setAmountSecondsPassed(
       differenceInSeconds(new Date, newCycle.startDate)
@@ -56,28 +109,21 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
   }
 
   function interruptActiveCycle() {
-    const cycleListWithInterruptedOne = cycles.map(cycle => {
-      if(cycle.id === activeCycleId) {
-        return { ...cycle, interruptDate: new Date() }
-      } else {
-        return cycle
-      }
-    }
-    )
-    setCycles(cycleListWithInterruptedOne)
-    setActiveCycleId(null)
-  }
-
-  function markCurrentCycleAsFinished() {
-    const cycleListWithFinishedOne = cycles.map(cycle => {
-      if(cycle.id === activeCycle?.id) {
-        return {...cycle, finishedDate: new Date()}
-      } else {
-        return cycle 
+    dispatch({
+      type: "INTERRUPT_ACTIVE_CYCLE",
+      payload: {
+        activeCycleId
       }
     })
+  }
 
-    setCycles(cycleListWithFinishedOne)
+  function markActiveCycleAsFinished() {
+    dispatch({
+      type: "MARK_ACTIVE_CYCLE_AS_FINISHED",
+      payload: {
+        activeCycleId
+      }
+    })
   }
 
   function updateAmountSecondsPassed(seconds: number) {
@@ -92,7 +138,7 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
       activeCycleId, 
       amountSecondsPassed,
       updateAmountSecondsPassed,
-      markCurrentCycleAsFinished,
+      markActiveCycleAsFinished,
       interruptActiveCycle
     }}>
       {children}

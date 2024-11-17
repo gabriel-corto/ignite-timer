@@ -26,7 +26,6 @@ export function Home() {
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
       task: "",
-      minutesAmount: 0,
     }
   })
 

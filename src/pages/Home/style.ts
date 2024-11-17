@@ -12,6 +12,7 @@ export const HomeContainer = styled.main`
     flex-direction: column;
     align-items: center;
     gap: 3.5rem; 
+    margin-top: 1rem;
   }
 `
 const BaseCountDownButton = styled.button`

@@ -12,7 +12,7 @@ export const FormContainer = styled.div`
   flex-wrap: wrap;
 `
 const BaseInput = styled.input`
-  background: transparent;
+  background: ${props => props.theme["gray-900"]};
   color: ${props => props.theme["gray-100"]};
   height: 2.5rem;
   border: 0;
@@ -20,6 +20,7 @@ const BaseInput = styled.input`
   font-size: 1.125rem;
   font-weight: bold;
   padding: 0 0.5rem;  
+  border-radius: 8px;
 
   &:focus {
     box-shadow: none;
@@ -27,7 +28,7 @@ const BaseInput = styled.input`
   }
 
   &::placeholder{
-    color: cornflowerblue${props => props.theme["gray-500"]};
+    color: ${props => props.theme["gray-500"]};
   }
 `
 export const TaskInput = styled(BaseInput)`
@@ -35,4 +36,5 @@ export const TaskInput = styled(BaseInput)`
 `
 export const MinuteAmountInput = styled(BaseInput)`
   width: 5rem;
+  text-align: center;
 `
