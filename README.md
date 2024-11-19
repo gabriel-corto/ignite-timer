@@ -1,4 +1,4 @@
-# Ignite Feed 
+# Ignite Timmer 
 
 Ignite Timer is nothing more than a project that allows the user to time their daily tasks, in addition to allowing them to see a history of all tasks already performed. developed during https://rocketseat.com.br react foundamental 02, to fixe content about, styled-components, react routers, form validation with zod and react hook form, state managment with reducer and context API.   
 
