@@ -33,3 +33,25 @@ export const HeaderContainer = styled.header`
     }
   }
 `
+export const MarkCyleAsFinishedButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+
+  border: 0;
+  border-radius: 8px;
+  color: ${props => props.theme.white};
+  background: ${props => props.theme["green-500"]};
+
+  &:focus {
+    box-shadow: 0px 0px 0px 2px ${props => props.theme["green-700"]};
+  }
+  &:hover {
+    cursor: pointer;
+    opacity: .9;
+  }
+  `

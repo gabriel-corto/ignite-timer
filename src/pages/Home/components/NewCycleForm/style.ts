@@ -20,7 +20,7 @@ const BaseInput = styled.input`
   font-size: 1.125rem;
   font-weight: bold;
   padding: 0 0.5rem;  
-  border-radius: 8px;
+  border-radius: 4px;
 
   &:focus {
     box-shadow: none;

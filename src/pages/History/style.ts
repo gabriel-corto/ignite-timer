@@ -12,6 +12,32 @@ export const HistoryContainer = styled.main`
     color: ${props => props.theme["gray-100"]};
   }
 `
+export const HistoryHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`
+export const CleanCycleStorageButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  gap: 0.5rem;
+
+  border: 0;
+  padding: 0.5rem 2rem;
+  border-radius: 8px;
+  color: ${props => props.theme.white};
+  background: ${props => props.theme["red-500"]};
+
+  &:focus {
+    box-shadow: 0px 0px 0px 2px ${props => props.theme["red-500"]};
+  }
+  &:hover{
+    cursor: pointer;
+    background: ${props => props.theme["red-700"]};
+  }
+`
 export const HistoryList = styled.div`
   flex: 1;
   overflow: auto;
@@ -80,5 +106,40 @@ export const Status = styled.span<StatusProps>`
 
     border-radius: 50%;
     background: ${props => props.theme[VARIANT_COLORS[props.variant]]};
+  }
+`
+export const WarningContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 1rem;
+  font-weight: 400;
+
+  color: ${props => props.theme["gray-500"]};
+
+  svg {
+    color: ${props => props.theme["yellow-500"]};
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+
+    text-decoration: none;
+    font-weight: bold;
+
+    background: ${props => props.theme["red-500"]};
+    color: ${props => props.theme.white};
+
+    &:focus {
+      box-shadow: 0px 0px 0px 2px ${props => props.theme["red-700"]};
+    }
   }
 `

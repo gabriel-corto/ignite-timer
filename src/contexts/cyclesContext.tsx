@@ -9,13 +9,16 @@ interface CycleFormData {
 }
 interface CycleContextType {
   cycles: Cycle[],
-  createNewCycle: (data: CycleFormData) => void 
   activeCycle: Cycle | undefined
   activeCycleId: string | null
   amountSecondsPassed: number
+
+  createNewCycle: (data: CycleFormData) => void 
   updateAmountSecondsPassed: (seconds: number) => void 
   markActiveCycleAsFinished: () => void 
   interruptActiveCycle: () => void 
+  finishActiveCycle: () => void 
+  cleanCyclesStored: () => void 
 }
 
 export const CycleContext = createContext({} as CycleContextType)
@@ -24,13 +27,15 @@ interface CyclesContextProviderProps {
   children: ReactNode
 }
 
+const LOCAL_STORAGE_KEY = "@ignite-tg:cycles-state-1.0"
+
 export function CyclesContextProvider({ children }: CyclesContextProviderProps) {
   const [ cycleState, dispatch ] = useReducer(cyclesReducer, 
     {
       cycles: [],
       activeCycleId: null
     }, (initialState) => {
-      const storedData = localStorage.getItem("@ignite-tg:cycles-state-1.0")
+      const storedData = localStorage.getItem(LOCAL_STORAGE_KEY)
       if(storedData) {
         const parsedData = JSON.parse(storedData)
         return parsedData
@@ -49,9 +54,10 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
     return 0
   })
 
+
   useEffect(() => {
     const storeData = JSON.stringify(cycleState)
-    localStorage.setItem("@ignite-tg:cycles-state-1.0", storeData)
+    localStorage.setItem(LOCAL_STORAGE_KEY, storeData)
 
   }, [cycleState])
 
@@ -94,11 +100,25 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
       }
     })
   }
-
+  function finishActiveCycle() {
+    dispatch({
+      type: ActionType.FINISHE_ACTIVE_CYLE,
+      payload: {
+        activeCycleId
+      }
+    })
+  }
   function updateAmountSecondsPassed(seconds: number) {
     setAmountSecondsPassed(seconds)
   }
-  
+
+  function cleanCyclesStored() {
+    localStorage.clear()
+    dispatch({
+      type: ActionType.CLEAR_STORADE_CYCLES,
+    })
+  }
+
   return(
     <CycleContext.Provider value={{ 
       cycles,
@@ -108,7 +128,9 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
       amountSecondsPassed,
       updateAmountSecondsPassed,
       markActiveCycleAsFinished,
-      interruptActiveCycle
+      interruptActiveCycle,
+      finishActiveCycle,
+      cleanCyclesStored
     }}>
       {children}
     </CycleContext.Provider>

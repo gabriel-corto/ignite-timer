@@ -37,6 +37,23 @@ export function cyclesReducer(state: CycleState, action: any){
         draft.activeCycleId = null
         draft.cycles[activeCycleindexToMarkAsFinished].finishedDate = new Date()
       })
+    case ActionType.FINISHE_ACTIVE_CYLE: 
+      return {
+        ...state, 
+        activeCycleId: null,
+        cycles: state.cycles.map(cycle => {
+          if(cycle.id === state.activeCycleId) {
+            return {...cycle, finishedDate: new Date()}
+          } else {
+            return cycle
+          }
+        })
+      }
+    case ActionType.CLEAR_STORADE_CYCLES: 
+      return produce(state, draft => {
+        draft.activeCycleId = null
+        draft.cycles = []
+      })
     default: 
       return state 
   }
