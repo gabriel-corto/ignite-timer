@@ -35,10 +35,13 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
       cycles: [],
       activeCycleId: null
     }, (initialState) => {
-      const storedData = localStorage.getItem(LOCAL_STORAGE_KEY)
-      if(storedData) {
-        const parsedData = JSON.parse(storedData)
-        return parsedData
+      if(typeof window !== "undefined") {
+        const storedData = localStorage.getItem(LOCAL_STORAGE_KEY)
+
+        if(storedData) {
+          const parsedData = JSON.parse(storedData)
+          return parsedData
+        }
       }
       return initialState
     }
@@ -56,9 +59,10 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
 
 
   useEffect(() => {
-    const storeData = JSON.stringify(cycleState)
-    localStorage.setItem(LOCAL_STORAGE_KEY, storeData)
-
+    if(typeof window !== "undefined") {
+      const storeData = JSON.stringify(cycleState)
+      localStorage.setItem(LOCAL_STORAGE_KEY, storeData)
+    }
   }, [cycleState])
 
   function createNewCycle(data: CycleFormData) {
@@ -113,7 +117,9 @@ export function CyclesContextProvider({ children }: CyclesContextProviderProps) 
   }
 
   function cleanCyclesStored() {
-    localStorage.clear()
+    if(typeof window !== "undefined") {
+      localStorage.clear()
+    }
     dispatch({
       type: ActionType.CLEAR_STORADE_CYCLES,
     })
